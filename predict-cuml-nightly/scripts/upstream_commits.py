@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Upstream commit triage for /predict-nightly: what merged upstream since the last nightly.
+"""Upstream commit triage for /predict-cuml-nightly: what merged upstream since the last nightly.
 
 The method is the same for every upstream; only step 1 differs:
 
@@ -35,16 +35,17 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-CACHE = Path.home() / ".cache/predict-nightly"
+CACHE = Path.home() / ".cache/predict-cuml-nightly"
 CUML_REPO = Path.home() / "git/cuml"
 CUML = CUML_REPO / "python/cuml/cuml"
-GH = os.environ.get("GH", str(Path.home() / "miniforge3/bin/gh"))
+GH = os.environ.get("GH") or shutil.which("gh") or "gh"
 PR_NUMBER = re.compile(r"\(#(\d+)\)")
 
 SKLEARN_NON_SOURCE = re.compile(

@@ -26,6 +26,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timedelta
@@ -34,9 +35,9 @@ from pathlib import Path
 from nightly_logs import parse_job_log, test_key
 
 REPO = "NVIDIA/cuml"
-# gh lives in base miniforge, not in the cuml envs.
-GH = os.environ.get("GH", str(Path.home() / "miniforge3/bin/gh"))
-CACHE = Path(os.environ.get("PREDICT_NIGHTLY_CACHE", Path.home() / ".cache/predict-nightly"))
+# Set GH when gh isn't on PATH, e.g. when it lives in a different conda env.
+GH = os.environ.get("GH") or shutil.which("gh") or "gh"
+CACHE = Path(os.environ.get("PREDICT_CUML_NIGHTLY_CACHE", Path.home() / ".cache/predict-cuml-nightly"))
 # Bracketed paths in job errors embed build strings, so they would make each night's signature unique.
 BRACKET_PATH = re.compile(r"\s*\[/[^\]]*\]")
 

@@ -11,6 +11,9 @@ deletes or adds comments, and submits the review themselves.
 
 ## Workflow
 
+`<skill-dir>` below is the folder containing this SKILL.md, wherever the skill
+is installed.
+
 1. **Get the comments.** They come from the conversation: explanations of the
    user's own changes, findings from a review, and so on. This skill doesn't decide
    what to say. Agree the text with the user before posting.
@@ -28,7 +31,7 @@ deletes or adds comments, and submits the review themselves.
      a range must stay within one diff hunk.
 3. **Dry run first**, and fix any `INVALID` lines:
    ```bash
-   python ~/.claude/skills/pr-pending-review/scripts/post_pending_review.py \
+   python <skill-dir>/scripts/post_pending_review.py \
        --repo OWNER/NAME --pr N comments.json --dry-run
    ```
 4. **Post** the same command without `--dry-run`. This is outward-facing, so only
@@ -50,5 +53,5 @@ deletes or adds comments, and submits the review themselves.
   PR description or a separate PR comment.
 - **Line numbers while pending:** the API reports `line: null` for comments in a
   pending review. They land on the right lines once submitted.
-- **gh binary:** uses `$GH`, else `gh` on `PATH`. Set `GH=~/miniforge3/bin/gh`
+- **gh binary:** uses `$GH`, else `gh` on `PATH`. Set `GH=/path/to/gh`
   when `gh` isn't on `PATH`.

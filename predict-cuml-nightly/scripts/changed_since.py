@@ -17,13 +17,14 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import urllib.error
 import urllib.request
 from pathlib import Path
 
 REPO = "NVIDIA/cuml"
-GH = os.environ.get("GH", str(Path.home() / "miniforge3/bin/gh"))
+GH = os.environ.get("GH") or shutil.which("gh") or "gh"
 CUDA_SUFFIX = re.compile(r"-cu\d+$|-cuda\d+x$")
 PR_NUMBER = re.compile(r"\(#(\d+)\)")
 

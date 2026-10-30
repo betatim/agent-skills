@@ -20,12 +20,12 @@
 # understands), DIR/junit-*.xml and DIR/run.json (what was run).
 set -euo pipefail
 
-REPO="${HOME}/git/cuml"
-CACHE="${HOME}/.cache/predict-nightly"
+REPO="${CUML_REPO:-${HOME}/git/cuml}"
+CACHE="${HOME}/.cache/predict-cuml-nightly"
 REF="upstream/main"
 SKLEARN="nightly"
 DEPENDENCIES="nightly"
-GPU="1"
+GPU="${GPU:-1}"
 CUDA="13.3.0"
 PY="3.14"
 OUT=""

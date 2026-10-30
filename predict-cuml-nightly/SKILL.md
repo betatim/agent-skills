@@ -1,9 +1,9 @@
 ---
-name: predict-nightly
-description: Predict which cuML nightly CI jobs will fail before the nightly runs, using only information available beforehand (last nightly's failures and what changed since), then diagnose them and draft issues. Use when the user asks to "predict the nightly", "what will fail tonight", "run predict-nightly", or to score yesterday's prediction.
+name: predict-cuml-nightly
+description: Predict which cuML nightly CI jobs will fail before the nightly runs, using only information available beforehand (last nightly's failures and what changed since), then diagnose them and draft issues. Use when the user asks to "predict the nightly", "what will fail tonight", "run predict-cuml-nightly", or to score yesterday's prediction.
 ---
 
-# predict-nightly
+# predict-cuml-nightly
 
 Predicts the **next** cuML nightly (`NVIDIA/cuml`, workflows `build.yaml` then `test.yaml`) for `main` and
 the active `release/YY.MM`, and has a diagnosis and an issue (existing or drafted) ready before the nightly
@@ -49,18 +49,19 @@ an optional check on a specific verdict.
 ## Setup
 
 ```bash
-source ~/miniforge3/etc/profile.d/conda.sh && conda activate <newest cuml-YYYYMMDD env>
-SK=~/.claude/skills/predict-nightly/scripts
-OUT=~/git/cuml/agents/nightly-predictions
+# Activate a conda env with a recent cuML nightly installed.
+CUML=${CUML_REPO:-~/git/cuml}   # cuML checkout with an `upstream` remote
+SK=<skill-dir>/scripts   # the folder containing this SKILL.md
+OUT=$CUML/agents/nightly-predictions
 D=$(date -u +%F)        # ledger name = UTC date of the prediction
 W=<scratchpad>/predict-$D   # scratch dir for intermediate JSON
 ```
 
-Scripts are stdlib-only. They call `gh` at `~/miniforge3/bin/gh` (override with `$GH`). Caches live in
-`~/.cache/predict-nightly/`: job logs, blobless clones of each upstream, built wheels (per SHA) and sccache.
+Scripts are stdlib-only. They use `$GH`, else `gh` on `PATH`. Caches live in
+`~/.cache/predict-cuml-nightly/`: job logs, blobless clones of each upstream, built wheels (per SHA) and sccache.
 
-`$SK/docker_run.sh` (optional) runs specific cuML tests locally in the RAPIDS CI images on the A6000
-(GPU 1):
+`$SK/docker_run.sh` (optional) runs specific cuML tests locally in the RAPIDS CI images on a local
+GPU (`--gpu N` or `$GPU`, default 1):
 - **Build:** builds the `cuml` Python wheel at `--ref` (default `upstream/main`, cached per SHA, ~4 min
   cold) against the newest nightly `libcuml`. `--sklearn <sha>` builds that sklearn commit.
 - **Test:** installs with the `dependencies.yaml` constraints for `--dependencies` (nightly/latest/oldest)
@@ -116,7 +117,7 @@ Scripts are stdlib-only. They call `gh` at `~/miniforge3/bin/gh` (override with 
      (`carry-over`, or `risky` if other jobs with the same build passed).
    - A failed job with no test failures becomes a `job | ...` item. Bracketed paths are stripped from its signature
      so it stays stable across nights. If the signature reads `no recognised error line`, read the log tail
-     (`~/.cache/predict-nightly/logs/<job id>.log`) and apply the rule above.
+     (`~/.cache/predict-cuml-nightly/logs/<job id>.log`) and apply the rule above.
    - A `build.yaml` job with compiler errors becomes a `[build] build: <file>` item. Its `tests` are
      `build::<file>` for every file with an error:
      - cuML files are repo-relative (`cpp/src/...`);
@@ -172,10 +173,10 @@ Scripts are stdlib-only. They call `gh` at `~/miniforge3/bin/gh` (override with 
      Use the prompt below, plus the upstream-specific hints. Apply each subagent's JSON with `ledger.py apply`.
      Do not review the commits in the main context.
 
-   Subagent prompt (fill in upstream, items file, cuML path `~/git/cuml`):
+   Subagent prompt (fill in upstream, items file, cuML path `$CUML`):
    > For each <upstream> commit in `<items file>`, decide whether it will make tonight's cuML nightly CI fail.
-   > Read each diff with `gh pr diff <n> --repo <repo>` or `git --git-dir ~/.cache/predict-nightly/<upstream>.git
-   > show <sha>`, then look at how cuML (`~/git/cuml`) uses what changed. `detail.cuml_links` says where to start,
+   > Read each diff with `gh pr diff <n> --repo <repo>` or `git --git-dir ~/.cache/predict-cuml-nightly/<upstream>.git
+   > show <sha>`, then look at how cuML (`$CUML`) uses what changed. `detail.cuml_links` says where to start,
    > but don't stop there. Do not trust PR titles or labels; read the diff. Do not run tests, Docker or builds,
    > and do not modify files.
    > Return only a JSON array, one entry per commit:

@@ -12,10 +12,11 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 from pathlib import Path
 
-GH = os.environ.get("GH", str(Path.home() / "miniforge3/bin/gh"))
+GH = os.environ.get("GH") or shutil.which("gh") or "gh"
 
 
 def listing(kind, repo, state, limit):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Prediction ledger for /predict-nightly.
+"""Prediction ledger for /predict-cuml-nightly.
 
 Every collected item (carry-over cluster, sklearn commit, RAPIDS PR, changed
 package) gets a disposition. ``check`` fails until all of them have one, so
