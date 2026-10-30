@@ -3,6 +3,9 @@ A collection of agent skills I use.
 
 ## Skills
 
+These skills are personal, this means they can contain things that are tuned to the particular setup of my machine, how I like to organise things or are just plain weird to you. Tweak them so they are ergonomic for you. How a tool feels is as important as what it does.
+
+
 ### [predict-cuml-nightly](predict-cuml-nightly/)
 
 Predicts which cuML nightly CI jobs (build and test) will fail before the nightly runs, using only what was known beforehand: last nightly's failures and upstream changes since. Diagnoses each predicted failure and finds or drafts an issue for it.
